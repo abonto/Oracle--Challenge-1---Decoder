@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Challenge #1 - ONE</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body class="d-md-flex flex-md-row">
+    <div class="principal d-flex flex-column">
+        <header>
+            <img src="./img/logo.svg" class="logo" />
+        </header>
+        <div class="d-flex flex-column flex-grow">
+            <textarea id="inputTexto" class="flex-grow" placeholder="Ingrese el texto aquí"></textarea>
+        </div>
+        <div class="controles">
+            <div class="advertencia d-flex">
+                <span class="icon-info"></span><small>Solo letras minúsculas y sin acentos</small>
+            </div>
+            <div class="d-flex flex-column flex-sm-row">
+                <input type="button" class="button flex-sm-grow" value="CODIFICAR" onclick="inputCodificar()" />
+                <input type="button" class="button flex-sm-grow" value="DECODIFICAR" onclick="inputDecodificar()" />
+            </div>
+        </div>
+    </div>
+    <div class="lateral d-flex flex-column">
+        <div class="info d-flex flex-column flex-grow">
+            <div class="info-img d-none d-md-block">
+                <img src="./img/muñeco.png" />
+            </div>
+            <div class="info-txt my-auto">
+                <strong>MENSAJE NO ENCONTRADO</strong><br />
+                <span>INGRESAR TEXTO A CODIFICAR O DECODIFICAR</span>
+            </div>
+        </div>
+        <div id="outputTexto"></div>
+        <br>
+        <input type="button" class="button copiar" onclick="inputCopiar()" value="COPIAR" />
+    </div>
+
+    <script>
+        const input = document.querySelector('#inputTexto');
+        const output = document.querySelector('.lateral');
+
+        input.oninput = verificarInput;
+
+        var salida;
+
+        function crearSalida() {
+            const elem = document.querySelector('#outputTexto');
+            const child = document.createTextNode('');
+
+            elem.innerHTML = '';
+            elem.appendChild(child);
+
+            salida = child;
+        }
+
+        crearSalida();
+
+
+
+        function codificarLetra(letra) {
+            switch (letra) {
+                case 'e':
+                    return 'enter';
+                case 'i':
+                    return 'imes';
+                case 'a':
+                    return 'ai';
+                case 'o':
+                    return 'ober';
+                case 'u':
+                    return 'ufat';
+                default:
+                    return letra;
+            }
+        }
+
+        function codificar(texto) {
+            var salida = '';
+            for (const c of texto) {
+                salida += codificarLetra(c);
+            }
+            return salida;
+        }
+
+        function error() {
+            throw new SyntaxError('codificación inválida');
+        }
+
+        function decodificar(texto) {
+            var salida = ''
+            for (var j = 0; j < texto.length;) {
+                switch (texto[j]) {
+                    case 'e':
+                        if (texto[j + 4] === 'r') {
+                            salida += texto[j];
+                            j += 5;
+                        } else {
+                            error();
+                        }
+                        break
+                    case 'i':
+                        if (texto[j + 3] === 's') {
+                            salida += texto[j];
+                            j += 4;
+                        } else {
+                            error();
+                        }
+                        break
+                    case 'a':
+                        if (texto[j + 1] === 'i') {
+                            salida += texto[j];
+                            j += 2;
+                        } else {
+                            error();
+                        }
+                        break
+                    case 'o':
+                        if (texto[j + 3] === 'r') {
+                            salida += texto[j];
+                            j += 4;
+                        } else {
+                            error();
+                        }
+                        break
+                    case 'u':
+                        if (texto[j + 3] === 't') {
+                            salida += texto[j];
+                            j += 4;
+                        } else {
+                            error();
+                        }
+                        break;
+                    default:
+                        salida += texto[j++];
+                }
+            }
+            return salida;
+        }
+
+        const noPerm = /[^a-z ]/g
+
+        function verificarInput(ev) {
+            const {
+                inputType,
+                target,
+                data
+            } = ev
+            if (inputType === 'insertText') {
+                noPerm.lastIndex = 0
+                if (noPerm.test(data)) {
+                    let value = target.value
+                    target.value = value.substring(0, value.length - 1)
+                    alert('solo letras minúsculas y sin acentos')
+                }
+            } else if (inputType === 'insertFromPaste') {
+                let value = data || target.value || ''
+                value = value.toLowerCase()
+                target.value = value.replace(noPerm, '')
+                if (target.value !== value) {
+                    alert('texto modificado')
+                }
+            }
+        }
+
+        function inputDecodificar() {
+            var txt = input.value;
+            input.value = '';
+            if (txt.length === 0) {
+                salida.nodeValue = '';
+                output.classList.remove('con-salida');
+            } else {
+                try {
+                    salida.nodeValue = decodificar(txt);
+                } catch (O_o) {
+                    salida.nodeValue = 'Error en la decodificacion';
+                }
+                output.classList.add('con-salida');
+            }
+
+        }
+
+        function inputCodificar() {
+            var txt = input.value;
+            input.value = '';
+            if (txt.length === 0) {
+                salida.nodeValue = '';
+                output.classList.remove('con-salida');
+            } else {
+                salida.nodeValue = codificar(txt);
+                output.classList.add('con-salida');
+            }
+        }
+
+        const copiado = navigator.clipboard;
+
+        function inputCopiar() {
+            if (copiado) {
+                copiado
+                    .writeText(salida.nodeValue)
+                    .then(() => alert('texto copiado'))
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
