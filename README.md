@@ -1,5 +1,3 @@
-#Challenge #1 de Alura ONE
-
 # Alura Challenge | Oracle One | Lógica de Programación - Encriptador de texto
 
 -------------------------------------------------------------------------------
